@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>WebSocket 简易聊天室</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
+    <script th:src="@{/webjars/vue/dist/vue.min.js}"></script>
+</head>
+<body>
+<div id="app" class="d-flex flex-column vh-100" @click="isChangingName = false">
+    <header>
+        <div class="navbar navbar-dark bg-dark shadow-sm">
+            <div class="container d-flex justify-content-between">
+                <a href="/" class="navbar-brand d-flex align-items-center">
+                    <strong>简易聊天室</strong>
+                </a>
+                <button class="navbar-toggler d-md-none d-inline-block" @click="showMobileOnlineUser = !showMobileOnlineUser">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    <aside class="mobile-online-user" v-show="showMobileOnlineUser">
+        <div class="card h-100">
+            <div class="card-header">
+                <strong>在线 ({{onlineUsers.length}})</strong>
+            </div>
+            <ul class="online-user-list card-body list-unstyled mb-0">
+                <li class="my-2" v-for="onlineUser in onlineUsers">
+                    <div>{{onlineUser.name}}</div>
+                    <div class="small text-muted">{{onlineUser.ipAddress}}</div>
+                </li>
+            </ul>
+            <div class="card-footer" @click.stop>
+                <div class="d-flex justify-content-between align-items-center" v-if="!isChangingName">
+                    <strong>{{user.name}}</strong>
+                    <button class="btn btn-sm btn-link" @click="isChangingName = !isChangingName">更改用户名</button>
+                </div>
+                <div class="d-flex justify-content-between align-items-center" v-else>
+                    <input type="text" class="form-control form-control-sm mr-2" placeholder="请输入用户名" v-model="user.name" @keyup.enter="changeNameToServer">
+                    <button class="btn btn-sm btn-link flex-shrink-0" @click="changeNameToServer">确定</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+    <div class="container flex-fill py-3">
+        <div class="row h-100">
+            <main class="d-flex flex-column col-lg-9 col-md-8 col-12">
+                <ul class="message-list card card-body list-unstyled">
+                    <li v-for="message in messages">
+                        <div v-if="message.type === 'ENTER'">
+                            <div class="text-muted"><strong>{{message.user.name}} ({{message.user.ipAddress}})</strong>&nbsp;加入了聊天室</div>
+                        </div>
+                        <div v-else>
+                            <div><strong class="text-primary">{{message.user.name}} ({{message.user.ipAddress}})</strong>&nbsp;<span class="text-muted small">{{message.time}}</span></div>
+                            <div>{{message.message}}</div>
+                        </div>
+                    </li>
+                </ul>
+                <textarea class="form-control" rows="3" placeholder="Shift+Enter换行 Enter发送消息" v-model="message" @keyup.enter.exact="sendMsgToServer"></textarea>
+                <div class="text-right mt-2">
+                    <button class="btn btn-primary" @click="sendMsgToServer">发送</button>
+                    <button class="btn btn-dark" @click="clearMsg">清屏</button>
+                </div>
+            </main>
+            <aside class="col-lg-3 col-md-4 d-md-block d-none">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <strong>在线 ({{onlineUsers.length}})</strong>
+                    </div>
+                    <ul class="online-user-list card-body list-unstyled mb-0">
+                        <li class="my-2" v-for="onlineUser in onlineUsers">
+                            <div>{{onlineUser.name}}</div>
+                            <div class="small text-muted">{{onlineUser.ipAddress}}</div>
+                        </li>
+                    </ul>
+                    <div class="card-footer" @click.stop>
+                        <div class="d-flex justify-content-between align-items-center" v-if="!isChangingName">
+                            <strong>{{user.name}}</strong>
+                            <button class="btn btn-sm btn-link" @click="isChangingName = !isChangingName">更改用户名</button>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center" v-else>
+                            <input type="text" class="form-control form-control-sm mr-2" placeholder="请输入用户名" v-model="user.name" @keyup.enter="changeNameToServer">
+                            <button class="btn btn-sm btn-link flex-shrink-0" @click="changeNameToServer">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/chat.js}"></script>
+</body>
+</html>

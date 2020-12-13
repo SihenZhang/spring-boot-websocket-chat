@@ -1,0 +1,22 @@
+.bi {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -.1em;
+}
+
+.mobile-online-user {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    width: 80vw;
+    margin: 3.475rem 0 0;
+}
+
+.message-list,
+.online-user-list {
+    height: 0;
+    overflow-y: auto;
+}
