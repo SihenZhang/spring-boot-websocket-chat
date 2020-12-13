@@ -23,7 +23,7 @@
             </div>
         </div>
     </header>
-    <aside class="mobile-online-user" v-show="showMobileOnlineUser">
+    <aside class="mobile-online-user" :class="{ 'mobile-online-user-open': showMobileOnlineUser }">
         <div class="card h-100">
             <div class="card-header">
                 <strong>在线 ({{onlineUsers.length}})</strong>
