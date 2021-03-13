@@ -41,6 +41,14 @@ var app = new Vue({
             console.error('WebSocket发生异常')
         };
     },
+    watch: {
+        messages: function () {
+            this.$nextTick(() => {
+                var messages = document.getElementById('messages')
+                messages.scrollTop = messages.scrollHeight
+            })
+        }
+    },
     methods: {
         sendMsgToServer: function () {
             if (this.message.trim()) {

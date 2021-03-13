@@ -3,88 +3,83 @@
 <head>
     <title>WebSocket 简易聊天室</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/css/chat.css}">
+    <link rel="stylesheet" th:href="@{/webjars/tailwindcss/dist/tailwind.min.css}">
     <script th:src="@{/webjars/vue/dist/vue.min.js}"></script>
 </head>
 <body>
-<div id="app" class="d-flex flex-column vh-100" @click="isChangingName = false">
-    <header>
-        <div class="navbar navbar-dark bg-dark shadow-sm">
-            <div class="container d-flex justify-content-between">
-                <a href="/" class="navbar-brand d-flex align-items-center">
-                    <strong>简易聊天室</strong>
-                </a>
-                <button class="navbar-toggler d-md-none d-inline-block" @click="showMobileOnlineUser = !showMobileOnlineUser">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-                    </svg>
-                </button>
-            </div>
+<div id="app" class="flex flex-col h-screen" @click="isChangingName = false">
+    <header class="px-4 py-2 text-white bg-gray-800 shadow-md">
+        <div class="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+            <a href="/" class="py-1.5 text-xl font-semibold">简易聊天室</a>
+            <button class="inline-block md:hidden border border-white border-opacity-10 rounded px-3 py-1 text-xl text-white text-opacity-50 leading-none focus:outline-none" @click="showMobileOnlineUser = !showMobileOnlineUser">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="w-5 h-5 fill-current">
+                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                </svg>
+            </button>
         </div>
     </header>
-    <aside class="mobile-online-user" :class="{ 'mobile-online-user-open': showMobileOnlineUser }">
-        <div class="card h-100">
-            <div class="card-header">
+    <aside class="md:hidden fixed inset-0 z-50 mt-14 bg-black transition duration-500" :class="showMobileOnlineUser ? 'bg-opacity-50' : 'bg-opacity-0'">
+        <div class="flex flex-col absolute right-0 w-4/5 h-full border border-gray-200 rounded-lg overflow-hidden transform transition duration-500" :class="showMobileOnlineUser ? 'translate-x-0' : 'translate-x-full'">
+            <div class="px-5 py-3 bg-gray-100">
                 <strong>在线 ({{onlineUsers.length}})</strong>
             </div>
-            <ul class="online-user-list card-body list-unstyled mb-0">
-                <li class="my-2" v-for="onlineUser in onlineUsers">
+            <ul class="flex-grow h-0 border-t border-b border-gray-200 p-5 bg-white overflow-y-auto">
+                <li class="mb-4" v-for="onlineUser in onlineUsers">
                     <div>{{onlineUser.name}}</div>
-                    <div class="small text-muted">{{onlineUser.ipAddress}}</div>
+                    <div class="text-xs text-gray-500">{{onlineUser.ipAddress}}</div>
                 </li>
             </ul>
-            <div class="card-footer" @click.stop>
-                <div class="d-flex justify-content-between align-items-center" v-if="!isChangingName">
+            <div class="px-5 py-3 bg-gray-100" @click.stop>
+                <div class="flex justify-between items-center" v-if="!isChangingName">
                     <strong>{{user.name}}</strong>
-                    <button class="btn btn-sm btn-link" @click="isChangingName = !isChangingName">更改用户名</button>
+                    <button class="border border-transparent px-2 py-1 text-sm text-blue-500 hover:text-blue-600 leading-normal focus:outline-none transition" @click="isChangingName = !isChangingName">更改用户名</button>
                 </div>
-                <div class="d-flex justify-content-between align-items-center" v-else>
-                    <input type="text" class="form-control form-control-sm mr-2" placeholder="请输入用户名" v-model="user.name" @keyup.enter="changeNameToServer">
-                    <button class="btn btn-sm btn-link flex-shrink-0" @click="changeNameToServer">确定</button>
+                <div class="flex justify-between items-center" v-else>
+                    <input type="text" class="w-full border border-gray-200 rounded px-2 py-1 text-sm mr-2 focus:outline-none focus:ring-2 transition" placeholder="请输入用户名" v-model="user.name" @keyup.enter="changeNameToServer">
+                    <button class="flex-shrink-0 border border-transparent px-2 py-1 text-sm text-blue-500 hover:text-blue-600 leading-normal focus:outline-none transition" @click="changeNameToServer">确定</button>
                 </div>
             </div>
         </div>
     </aside>
-    <div class="container flex-fill py-3">
-        <div class="row h-100">
-            <main class="d-flex flex-column col-lg-9 col-md-8 col-12">
-                <ul class="message-list card card-body list-unstyled">
+    <div class="flex-grow p-4">
+        <div class="grid grid-cols-12 md:gap-8 max-w-7xl h-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+            <main class="flex flex-col col-span-12 lg:col-span-9 md:col-span-8">
+                <ul id="messages" class="flex-grow h-0 border border-gray-200 rounded-lg mb-4 p-5 overflow-y-auto shadow-sm">
                     <li v-for="message in messages">
                         <div v-if="message.type === 'ENTER'">
-                            <div class="text-muted"><strong>{{message.user.name}} ({{message.user.ipAddress}})</strong>&nbsp;加入了聊天室</div>
+                            <div class="text-gray-500"><strong>{{message.user.name}} ({{message.user.ipAddress}})</strong>&nbsp;加入了聊天室</div>
                         </div>
                         <div v-else>
-                            <div><strong class="text-primary">{{message.user.name}} ({{message.user.ipAddress}})</strong>&nbsp;<span class="text-muted small">{{message.time}}</span></div>
+                            <div><strong class="text-blue-500">{{message.user.name}} ({{message.user.ipAddress}})</strong>&nbsp;<span class="text-xs text-gray-500">{{message.time}}</span></div>
                             <div>{{message.message}}</div>
                         </div>
                     </li>
                 </ul>
-                <textarea class="form-control" rows="3" placeholder="Shift+Enter换行 Enter发送消息" v-model="message" @keyup.enter.exact="sendMsgToServer"></textarea>
-                <div class="text-right mt-2">
-                    <button class="btn btn-primary" @click="sendMsgToServer">发送</button>
-                    <button class="btn btn-dark" @click="clearMsg">清屏</button>
+                <textarea class="border border-gray-200 rounded-lg mb-4 px-5 py-2.5 text-base resize-none focus:outline-none focus:ring-2 shadow-sm transition" rows="3" placeholder="Shift+Enter换行 Enter发送消息" v-model="message" @keyup.enter.exact="sendMsgToServer"></textarea>
+                <div class="text-right">
+                    <button class="rounded-md px-3 py-1.5 text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-sm transition" @click="sendMsgToServer">发送</button>
+                    <button class="rounded-md px-3 py-1.5 text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 shadow-sm transition" @click="clearMsg">清屏</button>
                 </div>
             </main>
-            <aside class="col-lg-3 col-md-4 d-md-block d-none">
-                <div class="card h-100">
-                    <div class="card-header">
+            <aside class="hidden md:block md:col-span-4 lg:col-span-3">
+                <div class="flex flex-col h-full border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                    <div class="px-5 py-3 bg-gray-100">
                         <strong>在线 ({{onlineUsers.length}})</strong>
                     </div>
-                    <ul class="online-user-list card-body list-unstyled mb-0">
-                        <li class="my-2" v-for="onlineUser in onlineUsers">
+                    <ul class="flex-grow h-0 border-t border-b border-gray-200 p-5 bg-white overflow-y-auto">
+                        <li class="mb-4" v-for="onlineUser in onlineUsers">
                             <div>{{onlineUser.name}}</div>
-                            <div class="small text-muted">{{onlineUser.ipAddress}}</div>
+                            <div class="text-xs text-gray-500">{{onlineUser.ipAddress}}</div>
                         </li>
                     </ul>
-                    <div class="card-footer" @click.stop>
-                        <div class="d-flex justify-content-between align-items-center" v-if="!isChangingName">
+                    <div class="px-5 py-3 bg-gray-100" @click.stop>
+                        <div class="flex justify-between items-center" v-if="!isChangingName">
                             <strong>{{user.name}}</strong>
-                            <button class="btn btn-sm btn-link" @click="isChangingName = !isChangingName">更改用户名</button>
+                            <button class="border border-transparent px-2 py-1 text-sm text-blue-500 hover:text-blue-600 leading-normal focus:outline-none transition" @click="isChangingName = !isChangingName">更改用户名</button>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center" v-else>
-                            <input type="text" class="form-control form-control-sm mr-2" placeholder="请输入用户名" v-model="user.name" @keyup.enter="changeNameToServer">
-                            <button class="btn btn-sm btn-link flex-shrink-0" @click="changeNameToServer">确定</button>
+                        <div class="flex justify-between items-center" v-else>
+                            <input type="text" class="w-full border border-gray-200 rounded px-2 py-1 text-sm mr-2 focus:outline-none focus:ring-2 transition" placeholder="请输入用户名" v-model="user.name" @keyup.enter="changeNameToServer">
+                            <button class="flex-shrink-0 border border-transparent px-2 py-1 text-sm text-blue-500 hover:text-blue-600 leading-normal focus:outline-none transition" @click="changeNameToServer">确定</button>
                         </div>
                     </div>
                 </div>
